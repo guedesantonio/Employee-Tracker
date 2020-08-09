@@ -39,7 +39,7 @@ console.log(`
 
 // // prompt here
 
-init();
+
 
 
 const init = () => {
@@ -124,7 +124,16 @@ const init = () => {
         case "Quit":
         connection.end();
         break;
+      }
+    })
 }
 
-})
-}
+const viewAllEmployees = () => {
+  connection.query("SELECT * FROM employee", function(err, res) {
+    if (err) throw err;
+    console.log("");
+        console.table(res);
+    });
+    init();
+};
+init();
