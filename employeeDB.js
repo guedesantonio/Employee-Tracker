@@ -37,10 +37,7 @@ console.log(`
 +-------------------------------------------------------------+
 `)
 
-// // prompt here
-
-
-
+// // initial user prompt
 
 const init = () => {
   inquirer
@@ -68,72 +65,96 @@ const init = () => {
       }
     ])
     .then(answer => {
-      switch(answer.selection) {
+      switch (answer.selection) {
         case "View All Employees":
-        viewAllEmployees();
-        break;
+          viewAllEmployees();
+          break;
 
         case "View All Employees By Department":
-        viewAllEmployeesByDepartment();
-        break;
+          viewAllEmployeesByDepartment();
+          break;
 
         case "View All Employees By Manager":
-        showAllEmployeesByManager();
-        break;
+          showAllEmployeesByManager();
+          break;
 
         case "Add Employee":
-        addEmployee();
-        break;
+          addEmployee();
+          break;
 
         case "Remove Employee":
-        removeEmployee();
-        break;
+          removeEmployee();
+          break;
 
         case "Update Employee Role":
-        updateEmployeeRole();
-        break;
+          updateEmployeeRole();
+          break;
 
         case "Update Employee Manager":
-        updateEmployeeManager();
-        break;
+          updateEmployeeManager();
+          break;
 
         case "View All Roles":
-        viewAllRoles();
-        break;
+          viewAllRoles();
+          break;
 
         case "Add Role":
-        addRole();
-        break;
+          addRole();
+          break;
 
         case "Remove Role":
-        removeRole();
-        break;
+          removeRole();
+          break;
 
         case "Add Department":
-        addDepartment();
-        break;
+          addDepartment();
+          break;
 
         case "Remove Department":
-        addDepartment();
-        break;
+          addDepartment();
+          break;
 
         case "View Total Department Budget":
-        totalDepartmentBudget();
-        break;
+          totalDepartmentBudget();
+          break;
 
         case "Quit":
-        connection.end();
-        break;
+          connection.end();
+          break;
       }
     })
 }
 
+// HOW TO VIEW MANAGER AS NAME INSTEAD OF ID?
+// VIEW FUNCTIONS
 const viewAllEmployees = () => {
-  connection.query("SELECT * FROM employee", function(err, res) {
+  connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, name AS department, role.salary, manager_id AS manager FROM employee INNER JOIN role ON (employee.role_id = role.id) INNER JOIN department ON (department.id = role.department_id)", function (err, res) {
     if (err) throw err;
     console.log("");
-        console.table(res);
-    });
+    console.table(res);
     init();
+  });
 };
+
+// WHAT IF I CREATE A NEW DEPARTMENT?
+const viewAllEmployeesByDepartment = () => {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "Which department would you like to see?",
+        name: "department",
+        choices: ["Sales", "Engineering", "Legal", "Finance"]
+      }
+    ])
+    .then(answer => {
+      const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, name AS department, role.salary, manager_id AS manager FROM employee INNER JOIN role ON (employee.role_id = role.id) INNER JOIN department ON (department.id = role.department_id) WHERE department.name = ?;`;
+      connection.query(query, answer.department, function (err, res) {
+        if (err) throw err;
+        console.log("");
+        console.table(res);
+        init();
+      });
+    });
+}
 init();
