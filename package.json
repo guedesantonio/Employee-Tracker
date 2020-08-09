@@ -1,0 +1,29 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "App used to track the employee on your team.",
+  "main": "employeeDB.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guedesantonio/Employee-Tracker.git"
+  },
+  "keywords": [
+    "Employee",
+    "Tracker",
+    "Human",
+    "Resources"
+  ],
+  "author": "Antonio Guedes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guedesantonio/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/guedesantonio/Employee-Tracker#readme",
+  "dependencies": {
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
