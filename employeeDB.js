@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
+
 const connection = mysql.createConnection({
   host: "localhost",
 
@@ -37,100 +38,93 @@ console.log(`
 `)
 
 // // prompt here
-// const postAuction = () => {
-//   inquirer
-//     .prompt([
-//       {
-//         name: "item",
-//         type: "input",
-//         message: "What is the item you would like to submit?"
-//       },
-//       {
-//         name: "category",
-//         type: "input",
-//         message: "What category would you like to place your auction in?"
-//       },
-//       {
-//         name: "startingBid",
-//         type: "input",
-//         message: "What would like to be the starting bid to be?"
-//       }
-//     ])
-//     .then(answer => {
-//       createProduct(answer);
 
-//     })
-// }
+init();
 
 
-// const createProduct = (answer) => {
-//   console.log("Inserting a new product...\n");
-//   var query = connection.query(
-//     "INSERT INTO products SET ?",
-//     {
-//       item_name: answer.item,
-//       category: answer.category,
-//       starting_bid: answer.starting_bid || 0,
-//       highest_bid: answer.starting_bid || 0
-//     },
-//     function (err, res) {
-//       if (err) throw err;
-//       console.log(res.affectedRows + " product inserted!\n")
-//       // updateProduct();
-//     }
-//   );
+const init = () => {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "What would you like to do?",
+        name: "selection",
+        choices: [
+          "View All Employees",
+          "View All Employees By Department",
+          "View All Employees By Manager",
+          "Add Employee",
+          "Remove Employee",
+          "Update Employee Role",
+          "Update Employee Manager",
+          "View all Roles",
+          "Add Role",
+          "Remove Role",
+          "Add Department",
+          "Remove Department",
+          "View Total Department Budget",
+          "Quit"
+        ]
+      }
+    ])
+    .then(answer => {
+      switch(answer.selection) {
+        case "View All Employees":
+        viewAllEmployees();
+        break;
 
-//   // logs the actual query being run
-//   console.log(query.sql);
-// }
+        case "View All Employees By Department":
+        viewAllEmployeesByDepartment();
+        break;
 
-// postAuction();
-// // const updateProduct = () => {
-// //   console.log("Updating all Rocky Road quantities...\n");
-// //   var query = connection.query(
-// //     "UPDATE products SET ? WHERE ?",
-// //     [
-// //       {
-// //         quantity: 100
-// //       },
-// //       {
-// //         flavor: "Rocky Road"
-// //       }
-// //     ],
-// //     function (err, res) {
-// //       if (err) throw err;
-// //       console.log(res.affectedRows + " products updated!\n");
-// //       // Call deleteProduct AFTER the UPDATE completes
-// //       deleteProduct();
-// //     }
-// //   );
+        case "View All Employees By Manager":
+        showAllEmployeesByManager();
+        break;
 
-// //   // logs the actual query being run
-// //   console.log(query.sql);
-// // }
+        case "Add Employee":
+        addEmployee();
+        break;
 
-// // const deleteProduct = () => {
-// //   console.log("Deleting all strawberry icecream...\n");
-// //   connection.query(
-// //     "DELETE FROM products WHERE ?",
-// //     {
-// //       flavor: "strawberry"
-// //     },
-// //     function (err, res) {
-// //       if (err) throw err;
-// //       console.log(res.affectedRows + " products deleted!\n");
-// //       // Call readProducts AFTER the DELETE completes
-// //       readProducts();
-// //     }
-// //   );
-// // }
+        case "Remove Employee":
+        removeEmployee();
+        break;
 
-// // const readProducts = () => {
-// //   console.log("Selecting all products...\n");
-// //   connection.query("SELECT * FROM products", function (err, res) {
-// //     if (err) throw err;
-// //     // Log all results of the SELECT statement
-// //     console.log(res);
-// //     connection.end();
-// //   });
-// // }
+        case "Update Employee Role":
+        updateEmployeeRole();
+        break;
+
+        case "Update Employee Manager":
+        updateEmployeeManager();
+        break;
+
+        case "View All Roles":
+        viewAllRoles();
+        break;
+
+        case "Add Role":
+        addRole();
+        break;
+
+        case "Remove Role":
+        removeRole();
+        break;
+
+        case "Add Department":
+        addDepartment();
+        break;
+
+        case "Remove Department":
+        addDepartment();
+        break;
+
+        case "View Total Department Budget":
+        totalDepartmentBudget();
+        break;
+
+        case "Quit":
+        connection.end();
+        break;
+}
+
+})
+}
