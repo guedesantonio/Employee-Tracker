@@ -133,19 +133,29 @@ function getAllDepartments() {
 };
 
 async function getAllManagers() {
-  let query = await connection.query(`
-  SELECT distinct manager_id 
-  FROM employee 
-  WHERE manager_id IS NOT NULL`);
-  let newQuery = query.map(obj => {
-    let rObj = { name: obj.manager_id }
-    console.log(rObj);
-    return rObj
-  })
-  return newQuery;
+  return connection.query(`
+  SELECT 
+  CONCAT(first_name," ", last_name) AS name 
+  FROM 
+    (SELECT distinct manager_id 
+    FROM employee 
+    WHERE manager_id  IS NOT NULL) AS managers
+  JOIN employee ON (employee.id = managers.manager_id);`)
+  // let query = await connection.query(`
+  // SELECT distinct manager_id 
+  // FROM employee 
+  // WHERE manager_id IS NOT NULL AS managers
+  // JOIN employee ON (employee.id = managers.manager_id)
+  // `);
+  // let newQuery = query.map(obj => {
+  //   let rObj = { name: obj.manager_id }
+  //   console.log(rObj);
+  //   return rObj
+  // })
+  // return newQuery;
 };
 
-function getAllRoles() {
+async function getAllRoles() {
   return connection.query(`SELECT title AS name FROM role`)
 };
 
@@ -208,19 +218,6 @@ const viewAllEmployeesByDepartment = () => {
   });
 };
 
-async function getAllManagers() {
-  let query = await connection.query(`
-  SELECT distinct manager_id 
-  FROM employee 
-  WHERE manager_id IS NOT NULL`);
-  let newQuery = query.map(obj => {
-    let rObj = { name: obj.manager_id }
-    console.log(rObj);
-    return rObj
-  })
-  return newQuery;
-};
-
 const viewAllEmployeesByManager = () => {
 
   getAllManagers().then((managers) => {
@@ -247,7 +244,7 @@ const viewAllEmployeesByManager = () => {
         INNER JOIN role ON (employee.role_id = role.id) 
         INNER JOIN department ON (department.id = role.department_id)
         LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
-        WHERE managers.id = ?;`;
+        WHERE 'Manager Name' = ?;`;
         connection.query(query, answer.manager, function (err, res) {
           if (err) throw err;
           console.log("");
@@ -311,10 +308,9 @@ const viewTotalDepartmentBudget = () => {
 // ADD FUNCTIONS
 
 // NOT FINISHED YET
-const addEmployee = () => {
-
-  getAllRoles().then((roles) => {
-    console.log(roles);
+const addEmployee = async () => {
+  let roles = await getAllRoles();
+  let manager = await getAllManagers();
     inquirer
       .prompt([
         {
@@ -335,8 +331,9 @@ const addEmployee = () => {
         },
         {
           name: "manager",
-          type: "input",
-          message: "What is the manager id?"
+          type: "list",
+          message: "What is the manager name?",
+          choices: manager
         }
       ])
       .then(answer => {
@@ -352,7 +349,7 @@ const addEmployee = () => {
         }
         );
       });
-  });
+  
 };
 
 const addRole = () => {
