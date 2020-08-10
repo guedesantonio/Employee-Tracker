@@ -12,9 +12,8 @@
   * [Usage](#usage)
   * [License](#license)
   * [Contributing](#contributing)
-  * [Tests](#tests)
   * [Questions](#questions)
-  * [Screenshots](#screenshots)
+  
 
   ## Installation
   The user needs to run:
@@ -45,7 +44,7 @@
 
   ![inquirer](./Assets/EmployeeTracker.png)
 
-  Please click [here](https://drive.google.com/file/d/1KQnTliIxf2PLpnME1_WLn7zAExDcEONh/view) to see the functionality of this app.
+  Please click [here](https://drive.google.com/file/d/1hGJstr4FPXz8M642CLtMm9xgpa1vZnmn/view) to see the functionality of this app.
 
   ## License
   This project is licensed under the MIT.
@@ -53,19 +52,6 @@
   ## Contributing
   See [Questions](#Questions) section.
 
-  ## Tests
-  To run tests, run the following command:
-
-  ```
-  npm run test
-  ```
-
-  ![test](./Assets/test.png)
-
   ## Questions
   If you have any questions about the repo, open an issue or contact me directly at gguedesantonio@gmail.com. 
   You can find more about my work at [Github profile](https://github.com/guedesantonio). 
-
-  ## Screenshots
-
-  ![html_screenshot](./Assets/ss.png)
