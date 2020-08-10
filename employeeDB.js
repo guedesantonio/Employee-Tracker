@@ -57,7 +57,7 @@ const init = () => {
           "Remove Employee",
           "Update Employee Role",
           "Update Employee Manager",
-          "View all Roles",
+          "View All Roles",
           "Add Role",
           "Remove Role",
           "Add Department",
@@ -218,7 +218,7 @@ const viewAllEmployeesByManager = () => {
       ])
       .then(answer => {
         console.log(answer.manager)
-          const query = `
+        const query = `
         SELECT 
           employee.id, 
           CONCAT (employee.first_name,' ', employee.last_name) AS 'Employee Name', 
@@ -231,55 +231,33 @@ const viewAllEmployeesByManager = () => {
         INNER JOIN department ON (department.id = role.department_id)
         LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
         WHERE managers.id = ?;`;
-          connection.query(query, answer.manager, function (err, res) {
-            if (err) throw err;
-            console.log("");
-            console.table(res);
-            init();
-          });
+        connection.query(query, answer.manager, function (err, res) {
+          if (err) throw err;
+          console.log("");
+          console.table(res);
+          init();
+        });
       });
   });
 };
 
-
-
-//   // connection.query("SELECT id, first_name, last_name, manager_id FROM company_db.employee", function (err, res) {
-//   //   if (err) throw err;
-
-
-
-
-//   // inquirer
-//   //   .prompt([
-//   //     {
-//   //       type: "list",
-//   //       message: "Which department would you like to see?",
-//   //       name: "department",
-//   //       choices: ["Sales", "Engineering", "Legal", "Finance"]
-//   //     }
-//   //   ])
-//   //   .then(answer => {
-//   //     const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, name AS department, role.salary, manager_id AS manager FROM employee INNER JOIN role ON (employee.role_id = role.id) INNER JOIN department ON (department.id = role.department_id) WHERE department.name = ?;`;
-//   //     connection.query(query, answer.department, function (err, res) {
-//   //       if (err) throw err;
-//   //       console.log("");
-//   //       console.table(res);
-//   //       init();
-//   //     });
-//   //   });
-// }
-
-
-// TOBYS CODE
-// async function viewAllEmployeesByManager() {
-//   let query = await connection.query(`SELECT distinct manager_id FROM employee WHERE manager_id IS NOT NULL`)
-//   let newQuery = query.map(obj => {
-//     let rObj = {name: obj.manager_id}
-//     console.log(rObj);
-//     return rObj
-//   })
-//   return newQuery;
-// };
+const viewAllRoles = () => {
+  connection.query(`
+      SELECT 
+        role.id, 
+        role.title AS 'Role Title',  
+        role.salary AS Salary, 
+        name AS Department
+      FROM role 
+      INNER JOIN department ON (role.department_id = department.id)
+    `, function (err, res) {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    init();
+  }
+  );
+};
 
 
 
