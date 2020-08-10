@@ -231,7 +231,12 @@ const viewAllEmployeesByManager = () => {
         }
       ])
       .then(answer => {
-        console.log(answer.manager)
+        let fullName = answer.manager.split(" ");
+        let firstName = fullName[0];
+        let lastName = fullName[1];
+        console.log(fullName);
+        console.log(firstName);
+        console.log(lastName);
         const query = `
         SELECT 
           employee.id, 
@@ -244,8 +249,8 @@ const viewAllEmployeesByManager = () => {
         INNER JOIN role ON (employee.role_id = role.id) 
         INNER JOIN department ON (department.id = role.department_id)
         LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
-        WHERE 'Manager Name' = ?;`;
-        connection.query(query, answer.manager, function (err, res) {
+        WHERE managers.first_name = ? AND managers.last_name = ?;`;
+        connection.query(query, [firstName,lastName], function (err, res) {
           if (err) throw err;
           console.log("");
           console.table(res);
