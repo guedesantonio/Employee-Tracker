@@ -118,7 +118,7 @@ const init = () => {
           break;
 
         case "View Total Department Budget":
-          totalDepartmentBudget();
+          viewTotalDepartmentBudget();
           break;
 
         case "Quit":
@@ -259,6 +259,37 @@ const viewAllRoles = () => {
   );
 };
 
+const viewTotalDepartmentBudget = () => {
+
+  getAllDepartments().then((departments) => {
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          message: "From which department would you like to see the total budget?",
+          name: "department",
+          choices: departments
+        }
+      ])
+      .then(answer => {
+        const query = `
+      SELECT 
+        name AS Department,
+        SUM(role.salary) AS 'Total Budget'
+      FROM employee 
+      INNER JOIN role ON (employee.role_id = role.id) 
+      INNER JOIN department ON (department.id = role.department_id)
+      LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
+      WHERE department.name = ?;`;
+        connection.query(query, answer.department, function (err, res) {
+          if (err) throw err;
+          console.log("");
+          console.table(res);
+          init();
+        });
+      });
+  });
+};
 
 
 init();
