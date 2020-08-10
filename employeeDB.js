@@ -127,6 +127,27 @@ const init = () => {
       }
     })
 }
+// GET FUNCTIONS
+function getAllDepartments() {
+  return connection.query(`SELECT name FROM department`)
+};
+
+async function getAllManagers() {
+  let query = await connection.query(`
+  SELECT distinct manager_id 
+  FROM employee 
+  WHERE manager_id IS NOT NULL`);
+  let newQuery = query.map(obj => {
+    let rObj = { name: obj.manager_id }
+    console.log(rObj);
+    return rObj
+  })
+  return newQuery;
+};
+
+function getAllRoles() {
+  return connection.query(`SELECT title AS name FROM role`)
+};
 
 // VIEW FUNCTIONS
 const viewAllEmployees = () => {
@@ -149,10 +170,6 @@ const viewAllEmployees = () => {
     init();
   }
   );
-};
-
-function getAllDepartments() {
-  return connection.query(`SELECT name FROM department`)
 };
 
 const viewAllEmployeesByDepartment = () => {
@@ -291,5 +308,48 @@ const viewTotalDepartmentBudget = () => {
   });
 };
 
+// ADD FUNCTIONS
+const addEmployee = () => {
 
+  getAllRoles().then((roles) => {
+    console.log(roles);
+    inquirer
+      .prompt([
+        {
+          name: "firstName",
+          type: "input",
+          message: "What is the employee first name?"
+        },
+        {
+          name: "lastName",
+          type: "input",
+          message: "What is the employee last name?"
+        },
+        {
+          type: "list",
+          message: "What is the role id?",
+          name: "role",
+          choices: roles
+        },
+        {
+          name: "lol",
+          type: "input",
+          message: "What is the manager id?"
+        }
+      ])
+      .then(answer => {
+
+        connection.query(`
+  INSERT INTO employee (first_name, last_name, role_id, manager_id)
+  VALUES ("John", "Doe", 1, NULL);
+    `, function (err, res) {
+          if (err) throw err;
+          console.log("");
+          console.table(res);
+          init();
+        }
+        );
+      });
+  });
+};
 init();
