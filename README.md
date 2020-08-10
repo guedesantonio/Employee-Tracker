@@ -20,9 +20,13 @@
   ```
   npm install
   ```
-  in the command line in order to install the required dependencies for this app on your system. In order to run this app please type in the command line and execute:
+  in the command line in order to install the required dependencies for this app on your system. 
+  The user also need to open the provided schema.sql file and seed.sql in your mySQL workbench.
+  Please also note that in order to use this app, you have to change the password the app uses to connect
+  
+  In order to run this app please type in the command line and execute:
   ```
-  node app.js
+  node employeeDB.js
   ```
 
   ## Usage
