@@ -129,6 +129,7 @@ const init = () => {
       }
     })
 }
+
 // GET FUNCTIONS
 function getAllDepartments() {
   return connection.query(`SELECT name FROM department`)
@@ -347,7 +348,6 @@ const viewTotalDepartmentBudget = () => {
 
 // ADD FUNCTIONS
 
-// NOT FINISHED YET
 const addEmployee = async () => {
   let roles = await getAllRolesID();
   let manager = await getAllManagersID();
