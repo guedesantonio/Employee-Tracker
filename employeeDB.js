@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const util = require("util");
+const { stringify } = require("querystring");
 
 
 const connection = mysql.createConnection({
@@ -342,18 +343,27 @@ const addEmployee = async () => {
         }
       ])
       .then(answer => {
-        const query = `
-        INSERT INTO employee (first_name, last_name, role_id, manager_id)
-        VALUES (?, ?, ?, ?);
-          `;
-        connection.query(query,[answer.firstName, answer.lastName, answer.role, answer.manager], function (err, res) {
+        connection.query('SELECT id FROM role WHERE title = ?',answer.role, function (err, res) {
           if (err) throw err;
           console.log("");
-          console.log(answer.firstName + answer.lastName + " added to the Database.");
-          init();
+          console.log(stringify(res) + " added to the Database.")
+          console.log("");
+          console.table(res);
         }
         );
-      });
+
+        // const query = `
+        // INSERT INTO employee (first_name, last_name, role_id, manager_id)
+        // VALUES (?, ?, ?, ?);
+        //   `;
+        // connection.query(query,[answer.firstName, answer.lastName, answer.role, answer.manager], function (err, res) {
+        //   if (err) throw err;
+        //   console.log("");
+        //   console.log(res + " is the id.");
+        //   init();
+        }
+        );
+      // });
   
 };
 
