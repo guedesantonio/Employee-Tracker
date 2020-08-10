@@ -26,17 +26,17 @@ connection.connect(err => {
 
 console.log(`
 +-------------------------------------------------------------+
-| +---+   |X    X|  +---   |     +---+  X     X +---+  +---+  |
-| |       | X  X |  |   |  |     |   |   X   X  |      |      |
-| +-+     |   |  |  +---   |     |   |     X    +-+    +-+    |
-| |       |      |  |      |     |   |     +    |      |      |
-| +---+   +      +  +      +---+ +---+     +    +---+  +---+  |
+| +---+   |\    /|  +---   |     +---+  \     / +---+  +---+  |
+| |       | \  / |  |   |  |     |   |   \   /  |      |      |
+| +-+     |      |  +---   |     |   |     X    +-+    +-+    |
+| |       |      |  |      |     |   |     |    |      |      |
+| +---+   +      +  +      +---+ +---+     |    +---+  +---+  |
 |                                                             |
-| +---+  +---        X      +----+  +   X   +---+   +---      |
-|   |    |   |      X X     |       |  X    |       |   |     |
-|   |    +---      X   X    |       |X      +-+     +---      |
-|   |    | X      +-----+   |       |  X    |       | X       |
-|   +    +   X   X       X  +----+  +   X   +---+   +   X     |
+| +---+  +---        X      +----+  +   /   +---+   +---      |
+|   |    |   |      / \     |       |  /    |       |   |     |
+|   |    +---      /   \    |       |X      +-+     +---      |
+|   |    |  \     +-----+   |       |  \    |       |  \      |
+|   +    +   \   /       \  +----+  +   \   +---+   +   \     |
 |                                                             |
 +-------------------------------------------------------------+
 `)
@@ -115,7 +115,7 @@ const init = () => {
           break;
 
         case "Remove Department":
-          addDepartment();
+          removeDepartment();
           break;
 
         case "View Total Department Budget":
@@ -158,6 +158,10 @@ async function getAllManagers() {
 
 async function getAllRoles() {
   return connection.query(`SELECT title AS name FROM role`)
+};
+
+async function getAllEmployees() {
+  return connection.query(`SELECT CONCAT (first_name,' ', last_name) AS name FROM employee`);
 };
 
 // VIEW FUNCTIONS
@@ -424,5 +428,37 @@ const addRole = () => {
         );
       });
   };
+
+// REMOVE FUNCTIONS
+
+const removeEmployee = async () => {
+  let employees = await getAllEmployees();
+
+  inquirer
+    .prompt([
+      {
+        name: "employee",
+        type: "list",
+        message: "Which employee would you like to remove?",
+        choices: employees
+      }
+    ])
+    .then(answer => {
+      let fullName = answer.employee.split(" ");
+        let firstName = fullName[0];
+        let lastName = fullName[1];
+      const query = `
+      DELETE FROM employee
+      WHERE first_name = ? AND last_name = ?;
+        `;
+      connection.query(query,[firstName,lastName], function (err, res) {
+        if (err) throw err;
+        console.log("");
+        console.log(answer.employee + " removed from the Database.");
+        init();
+      }
+      );
+    });
+};
 
 init();
