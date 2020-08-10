@@ -4,6 +4,7 @@ const util = require("util");
 const { stringify } = require("querystring");
 
 
+
 const connection = mysql.createConnection({
   host: "localhost",
 
@@ -26,17 +27,17 @@ connection.connect(err => {
 
 console.log(`
 +-------------------------------------------------------------+
-| +---+   |\    /|  +---   |     +---+  \     / +---+  +---+  |
-| |       | \  / |  |   |  |     |   |   \   /  |      |      |
+| +---+   |x    /|  +---   |     +---+  x     / +---+  +---+  |
+| |       | x  / |  |   |  |     |   |   x   /  |      |      |
 | +-+     |      |  +---   |     |   |     X    +-+    +-+    |
 | |       |      |  |      |     |   |     |    |      |      |
 | +---+   +      +  +      +---+ +---+     |    +---+  +---+  |
 |                                                             |
 | +---+  +---        X      +----+  +   /   +---+   +---      |
-|   |    |   |      / \     |       |  /    |       |   |     |
-|   |    +---      /   \    |       |X      +-+     +---      |
-|   |    |  \     +-----+   |       |  \    |       |  \      |
-|   +    +   \   /       \  +----+  +   \   +---+   +   \     |
+|   |    |   |      / x     |       |  /    |       |   |     |
+|   |    +---      /   x    |       |X      +-+     +---      |
+|   |    |  x     +-----+   |       |  x    |       |  x      |
+|   +    +   x   /       x  +----+  +   x   +---+   +   x     |
 |                                                             |
 +-------------------------------------------------------------+
 `)
@@ -156,8 +157,37 @@ async function getAllManagers() {
   // return newQuery;
 };
 
+async function getAllManagersID() {
+  let query = await connection.query(`
+  SELECT 
+  id,
+  CONCAT(first_name," ", last_name) AS name 
+  FROM 
+    (SELECT distinct manager_id 
+    FROM employee 
+    WHERE manager_id  IS NOT NULL) AS managers
+  JOIN employee ON (employee.id = managers.manager_id);`)
+  let newQuery = query.map(obj => {
+    let rObj = {name: obj.name, value: obj.id};
+    return rObj
+  })
+  return newQuery;
+};
+
 async function getAllRoles() {
   return connection.query(`SELECT title AS name FROM role`)
+};
+
+async function getAllRolesID() {
+  let query = await connection.query(`SELECT 
+  id,
+  title AS name
+  FROM role`);
+  let newQuery = query.map(obj => {
+    let rObj = {name: obj.name, value: obj.id};
+  return rObj
+  });
+  return newQuery;
 };
 
 async function getAllEmployees() {
@@ -319,8 +349,8 @@ const viewTotalDepartmentBudget = () => {
 
 // NOT FINISHED YET
 const addEmployee = async () => {
-  let roles = await getAllRoles();
-  let manager = await getAllManagers();
+  let roles = await getAllRolesID();
+  let manager = await getAllManagersID();
     inquirer
       .prompt([
         {
@@ -347,27 +377,18 @@ const addEmployee = async () => {
         }
       ])
       .then(answer => {
-        connection.query('SELECT id FROM role WHERE title = ?',answer.role, function (err, res) {
+        const query = `
+        INSERT INTO employee (first_name, last_name, role_id, manager_id)
+        VALUES (?, ?, ?, ?);
+          `;
+        connection.query(query,[answer.firstName, answer.lastName, answer.role, answer.manager], function (err, res) {
           if (err) throw err;
           console.log("");
-          console.log(stringify(res) + " added to the Database.")
-          console.log("");
-          console.table(res);
+          console.log(` ${answer.firstName} ${answer.lastName} added to the Database.`);
+          init();
         }
         );
-
-        // const query = `
-        // INSERT INTO employee (first_name, last_name, role_id, manager_id)
-        // VALUES (?, ?, ?, ?);
-        //   `;
-        // connection.query(query,[answer.firstName, answer.lastName, answer.role, answer.manager], function (err, res) {
-        //   if (err) throw err;
-        //   console.log("");
-        //   console.log(res + " is the id.");
-        //   init();
-        }
-        );
-      // });
+      });
   
 };
 
@@ -514,5 +535,46 @@ const removeDepartment = async () => {
       );
     });
 };
+
+// UPDATE FUNCTIONS
+
+const updateEmployeeRole = async () => {
+  let employees = await getAllEmployees();
+  let roles = await getAllRoles();
+
+  inquirer
+    .prompt([
+      {
+        name: "employee",
+        type: "list",
+        message: "Which employee would you like to change role?",
+        choices: employees
+      },
+      {
+        name: "role",
+        type: "list",
+        message: "Which is the employee new role?",
+        choices: roles
+      },
+    ])
+    .then(answer => {
+      let fullName = answer.employee.split(" ");
+        let firstName = fullName[0];
+        let lastName = fullName[1];
+      const query = `
+        UPDATE employee
+        SET role_id = ?
+        WHERE WHERE first_name = ? AND last_name = ?;
+        `;
+      connection.query(query,[role,firstName,lastName], function (err, res) {
+        if (err) throw err;
+        console.log("");
+        console.log(answer.employee + " removed from the Database.");
+        init();
+      }
+      );
+    });
+};
+
 
 init();
