@@ -309,6 +309,8 @@ const viewTotalDepartmentBudget = () => {
 };
 
 // ADD FUNCTIONS
+
+// NOT FINISHED YET
 const addEmployee = () => {
 
   getAllRoles().then((roles) => {
@@ -327,29 +329,64 @@ const addEmployee = () => {
         },
         {
           type: "list",
-          message: "What is the role id?",
+          message: "What is the role title?",
           name: "role",
           choices: roles
         },
         {
-          name: "lol",
+          name: "manager",
           type: "input",
           message: "What is the manager id?"
         }
       ])
       .then(answer => {
-
-        connection.query(`
-  INSERT INTO employee (first_name, last_name, role_id, manager_id)
-  VALUES ("John", "Doe", 1, NULL);
-    `, function (err, res) {
+        const query = `
+        INSERT INTO employee (first_name, last_name, role_id, manager_id)
+        VALUES (?, ?, ?, ?);
+          `;
+        connection.query(query,[answer.firstName, answer.lastName, answer.role, answer.manager], function (err, res) {
           if (err) throw err;
           console.log("");
-          console.table(res);
+          console.log(answer.firstName + answer.lastName + " added to the Database.");
           init();
         }
         );
       });
   });
 };
+
+const addRole = () => {
+    inquirer
+      .prompt([
+        {
+          name: "title",
+          type: "input",
+          message: "What is the role title?"
+        },
+        {
+          name: "salary",
+          type: "input",
+          message: "What is the role salary?"
+        },
+        {
+          name: "department",
+          type: "input",
+          message: "What is the role department id?"
+        },
+      ])
+      .then(answer => {
+        const query = `
+        INSERT INTO role (title, salary, department_id)
+        VALUES (?, ?, ?);
+          `;
+        connection.query(query,[answer.title, answer.salary, answer.department], function (err, res) {
+          if (err) throw err;
+          console.log("");
+          console.log(answer.title + " added to the Database.");
+          init();
+        }
+        );
+      });
+  };
+
 init();
