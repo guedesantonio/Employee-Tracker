@@ -135,15 +135,15 @@ const viewAllEmployees = () => {
       SELECT 
         employee.id, 
         CONCAT (employee.first_name,' ', employee.last_name) AS 'Employee Name', 
-        role.title, 
-        name AS department, 
-        role.salary, 
+        role.title AS 'Role Title', 
+        name AS Department, 
+        role.salary AS Salary, 
         CONCAT (managers.first_name,' ', managers.last_name) AS 'Manager Name'
       FROM employee 
       INNER JOIN role ON (employee.role_id = role.id) 
       INNER JOIN department ON (department.id = role.department_id)
       LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
-    `).then(function (err, res) {
+    `, function (err, res) {
       if (err) throw err;
       console.log("");
       console.table(res);
