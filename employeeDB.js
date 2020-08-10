@@ -461,4 +461,31 @@ const removeEmployee = async () => {
     });
 };
 
+const removeRole = async () => {
+  let roles = await getAllRoles();
+
+  inquirer
+    .prompt([
+      {
+        name: "role",
+        type: "list",
+        message: "Which role would you like to remove?",
+        choices: roles
+      }
+    ])
+    .then(answer => {
+      const query = `
+      DELETE FROM role
+      WHERE title = ?;
+        `;
+      connection.query(query,answer.role, function (err, res) {
+        if (err) throw err;
+        console.log("");
+        console.log(answer.role + " removed from the Database.");
+        init();
+      }
+      );
+    });
+};
+
 init();
