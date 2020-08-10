@@ -488,4 +488,31 @@ const removeRole = async () => {
     });
 };
 
+const removeDepartment = async () => {
+  let departments = await getAllDepartments();
+
+  inquirer
+    .prompt([
+      {
+        name: "department",
+        type: "list",
+        message: "Which department would you like to remove?",
+        choices: departments
+      }
+    ])
+    .then(answer => {
+      const query = `
+      DELETE FROM department
+      WHERE name = ?;
+        `;
+      connection.query(query,answer.department, function (err, res) {
+        if (err) throw err;
+        console.log("");
+        console.log(answer.department + " removed from the Database.");
+        init();
+      }
+      );
+    });
+};
+
 init();
