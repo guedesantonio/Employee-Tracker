@@ -128,7 +128,6 @@ const init = () => {
     })
 }
 
-// HOW TO VIEW MANAGER AS NAME INSTEAD OF ID?
 // VIEW FUNCTIONS
 const viewAllEmployees = () => {
   connection.query(`
@@ -144,30 +143,32 @@ const viewAllEmployees = () => {
       INNER JOIN department ON (department.id = role.department_id)
       LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
     `, function (err, res) {
-      if (err) throw err;
-      console.log("");
-      console.table(res);
-      init();
-    }
-    );
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    init();
+  }
+  );
 };
 
-// WHAT IF I CREATE A NEW DEPARTMENT?
+function getAllDepartments() {
+  return connection.query(`SELECT name FROM department`)
+};
+
 const viewAllEmployeesByDepartment = () => {
 
-  getAllDepartments().then((departments)=> {
+  getAllDepartments().then((departments) => {
     inquirer
-    .prompt([
-      {
-        type: "list",
-        message: "Which department would you like to see?",
-        name: "department",
-        choices: departments
-      }
-    ])
-    .then(answer => {
-      console.log(answer.department)
-      const query = `
+      .prompt([
+        {
+          type: "list",
+          message: "Which department would you like to see?",
+          name: "department",
+          choices: departments
+        }
+      ])
+      .then(answer => {
+        const query = `
       SELECT 
         employee.id, 
         CONCAT (employee.first_name,' ', employee.last_name) AS 'Employee Name', 
@@ -180,21 +181,65 @@ const viewAllEmployeesByDepartment = () => {
       INNER JOIN department ON (department.id = role.department_id)
       LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
       WHERE department.name = ?;`;
-      connection.query(query, answer.department, function (err, res) {
-        if (err) throw err;
-        console.log("");
-        console.table(res);
-        init();
+        connection.query(query, answer.department, function (err, res) {
+          if (err) throw err;
+          console.log("");
+          console.table(res);
+          init();
+        });
       });
-    });
   });
 };
 
-function getAllDepartments() {
-  return connection.query(`SELECT name FROM department`)
+async function getAllManagers() {
+  let query = await connection.query(`
+  SELECT distinct manager_id 
+  FROM employee 
+  WHERE manager_id IS NOT NULL`);
+  let newQuery = query.map(obj => {
+    let rObj = { name: obj.manager_id }
+    console.log(rObj);
+    return rObj
+  })
+  return newQuery;
 };
 
-// const viewAllEmployeesByManager = () => {
+const viewAllEmployeesByManager = () => {
+
+  getAllManagers().then((managers) => {
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          message: "Which manager team would you like to see?",
+          name: "manager",
+          choices: managers
+        }
+      ])
+      .then(answer => {
+        console.log(answer.manager)
+          const query = `
+        SELECT 
+          employee.id, 
+          CONCAT (employee.first_name,' ', employee.last_name) AS 'Employee Name', 
+          role.title AS 'Role Title', 
+          name AS Department, 
+          role.salary AS Salary, 
+          CONCAT (managers.first_name,' ', managers.last_name) AS 'Manager Name'
+        FROM employee 
+        INNER JOIN role ON (employee.role_id = role.id) 
+        INNER JOIN department ON (department.id = role.department_id)
+        LEFT JOIN employee AS managers ON (employee.manager_id = managers.id)
+        WHERE managers.id = ?;`;
+          connection.query(query, answer.manager, function (err, res) {
+            if (err) throw err;
+            console.log("");
+            console.table(res);
+            init();
+          });
+      });
+  });
+};
 
 
 
