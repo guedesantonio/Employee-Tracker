@@ -389,4 +389,28 @@ const addRole = () => {
       });
   };
 
+  const addDepartment = () => {
+    inquirer
+      .prompt([
+        {
+          name: "name",
+          type: "input",
+          message: "What is the department name?"
+        }
+      ])
+      .then(answer => {
+        const query = `
+        INSERT INTO department (name)
+        VALUES (?);
+          `;
+        connection.query(query,[answer.name], function (err, res) {
+          if (err) throw err;
+          console.log("");
+          console.log(answer.name + " added to the Database.");
+          init();
+        }
+        );
+      });
+  };
+
 init();
