@@ -540,7 +540,7 @@ const removeDepartment = async () => {
 
 const updateEmployeeRole = async () => {
   let employees = await getAllEmployees();
-  let roles = await getAllRoles();
+  let roles = await getAllRolesID();
 
   inquirer
     .prompt([
@@ -564,12 +564,12 @@ const updateEmployeeRole = async () => {
       const query = `
         UPDATE employee
         SET role_id = ?
-        WHERE WHERE first_name = ? AND last_name = ?;
+        WHERE first_name = ? AND last_name = ?;
         `;
-      connection.query(query,[role,firstName,lastName], function (err, res) {
+      connection.query(query,[answer.role,firstName,lastName], function (err, res) {
         if (err) throw err;
         console.log("");
-        console.log(answer.employee + " removed from the Database.");
+        console.log(` ${firstName} ${lastName} role updated in the Database.`);
         init();
       }
       );
