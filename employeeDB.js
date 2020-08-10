@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const util = require("util");
 const { stringify } = require("querystring");
+const { async } = require("rxjs");
 
 
 
@@ -132,7 +133,16 @@ const init = () => {
 
 // GET FUNCTIONS
 function getAllDepartments() {
-  return connection.query(`SELECT name FROM department`)
+  return connection.query(`SELECT name FROM department`);
+};
+
+async function getAllDepartmentsID() {
+  let query = await connection.query(`SELECT id, name FROM department`);
+  let newQuery = query.map(obj => {
+    let rObj = {name: obj.name, value: obj.id};
+    return rObj
+  })
+  return newQuery;
 };
 
 async function getAllManagers() {
@@ -144,18 +154,6 @@ async function getAllManagers() {
     FROM employee 
     WHERE manager_id  IS NOT NULL) AS managers
   JOIN employee ON (employee.id = managers.manager_id);`)
-  // let query = await connection.query(`
-  // SELECT distinct manager_id 
-  // FROM employee 
-  // WHERE manager_id IS NOT NULL AS managers
-  // JOIN employee ON (employee.id = managers.manager_id)
-  // `);
-  // let newQuery = query.map(obj => {
-  //   let rObj = { name: obj.manager_id }
-  //   console.log(rObj);
-  //   return rObj
-  // })
-  // return newQuery;
 };
 
 async function getAllManagersID() {
@@ -392,7 +390,8 @@ const addEmployee = async () => {
   
 };
 
-const addRole = () => {
+const addRole = async () => {
+  let departments = await getAllDepartmentsID();
     inquirer
       .prompt([
         {
@@ -407,9 +406,10 @@ const addRole = () => {
         },
         {
           name: "department",
-          type: "input",
-          message: "What is the role department id?"
-        },
+          type: "list",
+          message: "What is the role department?",
+          choices: departments
+        }
       ])
       .then(answer => {
         const query = `
