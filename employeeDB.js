@@ -576,5 +576,42 @@ const updateEmployeeRole = async () => {
     });
 };
 
+const updateEmployeeManager = async () => {
+  let employees = await getAllEmployees();
+  let managers = await getAllManagersID();
+
+  inquirer
+    .prompt([
+      {
+        name: "employee",
+        type: "list",
+        message: "Which employee would you like to change manager?",
+        choices: employees
+      },
+      {
+        name: "manager",
+        type: "list",
+        message: "Which is the employee new role?",
+        choices: managers
+      },
+    ])
+    .then(answer => {
+      let fullName = answer.employee.split(" ");
+        let firstName = fullName[0];
+        let lastName = fullName[1];
+      const query = `
+        UPDATE employee
+        SET manager_id = ?
+        WHERE first_name = ? AND last_name = ?;
+        `;
+      connection.query(query,[answer.manager,firstName,lastName], function (err, res) {
+        if (err) throw err;
+        console.log("");
+        console.log(` ${firstName} ${lastName} manager updated in the Database.`);
+        init();
+      }
+      );
+    });
+};
 
 init();
