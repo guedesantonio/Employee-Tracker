@@ -1,7 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const util = require("util");
-const { stringify } = require("querystring");
 const { async } = require("rxjs");
 
 
@@ -268,9 +267,6 @@ const viewAllEmployeesByManager = () => {
         let fullName = answer.manager.split(" ");
         let firstName = fullName[0];
         let lastName = fullName[1];
-        console.log(fullName);
-        console.log(firstName);
-        console.log(lastName);
         const query = `
         SELECT 
           employee.id, 
