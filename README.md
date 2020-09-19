@@ -3,7 +3,7 @@
 ![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)
 
   ## Description
-  A Node application that prompts the user about his companie employees and provide many diffrent options.
+  A Node application that prompts the user about his company employees and provide many diffrent options.
   To architect and build a solution for managing a company's employees using node, inquirer, and MySQL.
   
   ## Table of contents
